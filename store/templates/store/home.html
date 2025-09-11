@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2 style="text-align:center; margin: 2rem 0;">Our Products</h2>
+
+<!-- Products Grid -->
+<div class="products">
+    {% for product in products %}
+    <div class="product-card">
+        <img src="{{ product.img }}" alt="{{ product.name }}">
+        <h3>{{ product.name }}</h3>
+        <p>${{ product.price }}</p>
+        <button>Add to Cart</button>
+    </div>
+    {% endfor %}
+</div>
+
+<style>
+.products {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* ✅ force 4 columns */
+    gap: 20px;
+    padding: 20px;
+}
+
+.product-card {
+    border: 1px solid #ddd;
+    padding: 1rem;
+    border-radius: 8px;
+    background: #fff;
+    text-align: center;
+    transition: transform 0.2s ease-in-out;
+}
+
+.product-card:hover {
+    transform: scale(1.05);
+}
+
+.product-card img {
+    max-width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.product-card button {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.product-card button:hover {
+    background: #0056b3;
+}
+</style>
+
+
+{% endblock %}

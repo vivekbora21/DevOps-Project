@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card" style="width: 400px; margin: 2rem auto; background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+    <h2 style="text-align:center;">Login</h2>
+    <form method="post">
+        {% csrf_token %}
+
+        <!-- Email -->
+        <label for="email">Email <span class="required">*</span></label>
+        <input type="email" id="email" name="email" placeholder="Enter your email" required>
+
+        <!-- Password -->
+        <label for="password">Password <span class="required">*</span></label>
+        <input type="password" id="password" name="password" placeholder="Enter your password" required>
+
+        <button type="submit" class="btn" style="width:100%; margin-top:1rem;">Login</button>
+    </form>
+</div>
+{% endblock %}

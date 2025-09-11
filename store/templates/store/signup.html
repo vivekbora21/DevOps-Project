@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card" style="width: 400px; margin: 2rem auto; background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+    <h2 style="text-align:center;">Signup</h2>
+    <form method="post">
+        {% csrf_token %}
+        <!-- First Name -->
+        <label for="first_name">First Name <span class="required">*</span></label>
+        <input type="text" id="first_name" name="first_name" placeholder="First Name" 
+               pattern="^[A-Za-z]+$" minlength="2" maxlength="20" required>
+
+        <!-- Last Name -->
+        <label for="last_name">Last Name <span class="required">*</span></label>
+        <input type="text" id="last_name" name="last_name" placeholder="Last Name" 
+               pattern="^[A-Za-z]+$" minlength="2" maxlength="20" required>
+
+        <!-- Email -->
+        <label for="email">Email <span class="required">*</span></label>
+        <input type="email" id="email" name="email" placeholder="Email" required>
+
+        <!-- Mobile Number -->
+        <label for="mobile">Mobile Number <span class="required">*</span></label>
+        <input type="tel" id="mobile" name="mobile" placeholder="10-digit mobile number"
+               pattern="^[0-9]{10}$" required>
+
+        <!-- Password -->
+        <label for="password">Password <span class="required">*</span></label>
+        <input type="password" id="password" name="password" placeholder="Password"
+               pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{6,20}$"
+               required>
+
+        <button type="submit" class="btn" style="width:100%; margin-top:1rem;">Signup</button>
+    </form>
+</div>
+{% endblock %}

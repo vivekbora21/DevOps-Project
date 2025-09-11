@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Cart | E-Commerce{% endblock %}
+
+{% block content %}
+<div style="width: 90%; margin: 2rem auto;">
+    <h2>Your Shopping Cart</h2>
+
+    <table style="width:100%; border-collapse: collapse; margin-top:1rem; background:white; box-shadow:0 2px 6px rgba(0,0,0,0.1);">
+        <tr style="background:#2c3e50; color:white;">
+            <th style="padding:10px;">Product</th>
+            <th style="padding:10px;">Price</th>
+            <th style="padding:10px;">Quantity</th>
+            <th style="padding:10px;">Total</th>
+        </tr>
+        <tr style="text-align:center;">
+            <td style="padding:10px;">Sport Shoes</td>
+            <td>$49.99</td>
+            <td>1</td>
+            <td>$49.99</td>
+        </tr>
+        <tr style="text-align:center;">
+            <td style="padding:10px;">Wireless Headphones</td>
+            <td>$89.99</td>
+            <td>2</td>
+            <td>$179.98</td>
+        </tr>
+    </table>
+
+    <div style="text-align:right; margin-top:1rem;">
+        <h3>Total: $229.97</h3>
+        <a href="#" class="btn">Proceed to Checkout</a>
+    </div>
+</div>
+{% endblock %}
