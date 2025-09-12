@@ -1,7 +1,7 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password, check_password
-from .models import User
+from .models import User, Product, CartItem
 
 def signup(request):
     if request.method == "POST":
@@ -30,7 +30,13 @@ def signup(request):
 
 
 def cart(request):
-    return render(request, "store/cart.html")
+    if not request.session.get('user_id'):
+        messages.error(request, "Please log in to view your cart.")
+        return redirect('login')
+    user = User.objects.get(id=request.session['user_id'])
+    cart_items = CartItem.objects.filter(user=user).select_related('product')
+    total = sum(item.total_price for item in cart_items)
+    return render(request, "store/cart.html", {"cart_items": cart_items, "total": total})
 
 def login_view(request):
     if request.method == "POST":
@@ -58,40 +64,35 @@ def logout_view(request):
     return redirect("login")
 
 def home(request):
-    products = [
-        {"name": "Wireless Headphones", "price": 50, "img": "https://via.placeholder.com/200"},
-        {"name": "Smart Watch", "price": 120, "img": "https://via.placeholder.com/200"},
-        {"name": "Gaming Keyboard", "price": 75, "img": "https://via.placeholder.com/200"},
-        {"name": "Bluetooth Speaker", "price": 40, "img": "https://via.placeholder.com/200"},
-        {"name": "Laptop Backpack", "price": 35, "img": "https://via.placeholder.com/200"},
-        {"name": "Wireless Mouse", "price": 20, "img": "https://via.placeholder.com/200"},
-        {"name": "Mechanical Keyboard", "price": 90, "img": "https://via.placeholder.com/200"},
-        {"name": "USB-C Charger", "price": 25, "img": "https://via.placeholder.com/200"},
-        {"name": "4K Monitor", "price": 300, "img": "https://via.placeholder.com/200"},
-        {"name": "External Hard Drive", "price": 80, "img": "https://via.placeholder.com/200"},
-        {"name": "Power Bank", "price": 45, "img": "https://via.placeholder.com/200"},
-        {"name": "Smartphone", "price": 600, "img": "https://via.placeholder.com/200"},
-        {"name": "Tablet", "price": 400, "img": "https://via.placeholder.com/200"},
-        {"name": "Wireless Earbuds", "price": 60, "img": "https://via.placeholder.com/200"},
-        {"name": "Smart TV", "price": 700, "img": "https://via.placeholder.com/200"},
-        {"name": "VR Headset", "price": 350, "img": "https://via.placeholder.com/200"},
-        {"name": "Portable Projector", "price": 250, "img": "https://via.placeholder.com/200"},
-        {"name": "DSLR Camera", "price": 900, "img": "https://via.placeholder.com/200"},
-        {"name": "Drone", "price": 500, "img": "https://via.placeholder.com/200"},
-        {"name": "Smart Light Bulb", "price": 15, "img": "https://via.placeholder.com/200"},
-        {"name": "Electric Kettle", "price": 30, "img": "https://via.placeholder.com/200"},
-        {"name": "Air Purifier", "price": 150, "img": "https://via.placeholder.com/200"},
-        {"name": "Microwave Oven", "price": 180, "img": "https://via.placeholder.com/200"},
-        {"name": "Refrigerator", "price": 1000, "img": "https://via.placeholder.com/200"},
-        {"name": "Washing Machine", "price": 850, "img": "https://via.placeholder.com/200"},
-        {"name": "Coffee Maker", "price": 90, "img": "https://via.placeholder.com/200"},
-        {"name": "Fitness Tracker", "price": 70, "img": "https://via.placeholder.com/200"},
-        {"name": "Smart Home Hub", "price": 110, "img": "https://via.placeholder.com/200"},
-        {"name": "Electric Scooter", "price": 450, "img": "https://via.placeholder.com/200"},
-        {"name": "Portable Fan", "price": 25, "img": "https://via.placeholder.com/200"},
-        {"name": "Smart Door Lock", "price": 220, "img": "https://via.placeholder.com/200"},
-        {"name": "Electric Toothbrush", "price": 60, "img": "https://via.placeholder.com/200"},
-
-    ]
+    products = Product.objects.all()
     return render(request, "store/home.html", {"products": products})
+
+def add_to_cart(request, product_id):
+    if not request.session.get('user_id'):
+        messages.error(request, "Please log in to add items to cart.")
+        return redirect('login')
+    user = User.objects.get(id=request.session['user_id'])
+    product = get_object_or_404(Product, id=product_id)
+    cart_item, created = CartItem.objects.get_or_create(user=user, product=product, defaults={'quantity': 1})
+    if not created:
+        cart_item.quantity += 1
+        cart_item.save()
+    messages.success(request, f"{product.name} added to cart.")
+    return redirect('home')
+
+def update_quantity(request, cart_item_id):
+    if not request.session.get('user_id'):
+        messages.error(request, "Please log in to update cart.")
+        return redirect('login')
+    cart_item = get_object_or_404(CartItem, id=cart_item_id, user_id=request.session['user_id'])
+    if request.method == 'POST':
+        quantity = int(request.POST.get('quantity', 1))
+        if quantity > 0:
+            cart_item.quantity = quantity
+            cart_item.save()
+            messages.success(request, "Quantity updated.")
+        else:
+            cart_item.delete()
+            messages.success(request, "Item removed from cart.")
+    return redirect('cart')
 
